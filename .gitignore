@@ -1,0 +1,12 @@
+# Ignore environment file
+.env
+
+# Ignore Python virtual environment
+tryon/
+
+# Byte-compiled / Python cache files
+__pycache__/
+*.py[cod]
+
+# OS files
+.DS_Store
