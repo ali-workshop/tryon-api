@@ -7,7 +7,7 @@ from app.tryon import run_tryon
 import base64
 from dotenv import load_dotenv
 
-load_dotenv()
+
 app = FastAPI()
 
 @app.post("/tryon")
