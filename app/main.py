@@ -7,9 +7,20 @@ from app.tryon import run_tryon
 import base64
 from dotenv import load_dotenv
 
-
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
+origins = [
+    "http://localhost:3000",  # your frontend origin
+    "https://your-production-frontend.com"  # add production frontend if needed
+]
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          # Allowed origins
+    allow_credentials=True,
+    allow_methods=["*"],            # Allow GET, POST, etc.
+    allow_headers=["*"],            # Allow all headers
+)
 @app.post("/tryon")
 async def tryon(model_image: UploadFile = File(...), garment_image: UploadFile = File(...)):
     # Create temp filenames
