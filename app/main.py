@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 origins = [
     "http://localhost:3000",  # your frontend origin
-    "https://your-production-frontend.com"  # add production frontend if needed
+    "https://try-cloth-on.sophitica.ai"  # add production frontend if needed
 ]
 
 app.add_middleware(

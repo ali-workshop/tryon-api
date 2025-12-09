@@ -4,20 +4,79 @@ from google.genai import types
 from app.gemini_client import get_gemini_client
 
 PROMPT = """
-Apply the garment from the second image onto the model in the first image. The garment may be a dress, lingerie, or other clothing item.
+# **Half-Body Garment Replacement Prompt (Strict Garment Preservation)**
+**TASK:**
+Apply the garment from the second image onto the model in the first image.
+This prompt is ONLY for **half-body clothing replacement** (upper-body or lower-body).
+All original clothing on the model must be fully removed.
 
-CRITICAL REQUIREMENTS (STRICT RULES):
-- **Identity Preservation (Absolute):** Preserve 100% of the model's face, features, expressions, body pose, and proportions. The model's identity MUST NOT change.
-- **Background Preservation (Absolute):** Preserve 100% of the background, lighting, and environment.
-- **Garment Integrity (Absolute):** Preserve 100% of the garment's patterns, logos, textures, and colors.
-- **Modification Scope (Absolute):** ONLY modify the clothing region. For a **dress**, ensure seamless full-body coverage. For **lingerie**, render sheer and lace fabrics with photorealistic transparency and detail.
+---
 
-PHOTOREALISTIC 8K QUALITY:
-- Ultra-detailed fabric textures, including realistic rendering of sheer, lace, silk, and delicate materials.
-- Professional lighting and realistic draping/body interaction, conforming naturally to the model's body.
-- Sharp focus, zero blur.
+## **CRITICAL REQUIREMENTS (STRICT RULES)**
 
-NEGATIVE (AVOID AT ALL COSTS): blur, distortions, anime, CGI, wrong face, wrong pose, artifacts, color shift, pattern distortion, unnatural body shape, change in model's identity, background alteration.
+### **1. Identity Preservation — ABSOLUTE**
+- Preserve 100% of the model’s face, expression, hair, skin tone, body shape, and pose.
+- No beautification, morphing, or alteration.
+
+### **2. Background Preservation — ABSOLUTE**
+- Keep the original background, lighting, shadows, and environment fully unchanged.
+
+---
+
+## **3. Garment Integrity — DO NOT CHANGE THE GARMENT UNDER ANY CIRCUMSTANCE**
+**The garment MUST appear EXACTLY the same after try-on as in the original garment image.
+NO editing of the garment is allowed. NO redesign. NO cleanup. NO improvements.**
+
+This includes preserving:
+- Original colors (NO color correction or tone matching)
+- Original textures (fabric weave, thread, material, shine)
+- Original shape and silhouette (NO reshaping or smoothing)
+- Original patterns and graphics
+- Logos, prints, icons, badges
+- Wrinkles, folds, creases
+- Shadows and lighting that exist on the garment
+- Fabric wear, imperfections, distortions
+- **Watermarks or brand stamps**
+- Tags, labels, embroidery
+- Any visible flaws, marks, or photographer artifacts
+
+**The garment must be transferred AS-IS. Zero modification. Zero reinterpretation. Zero enhancement.**
+
+---
+
+## **4. Half-Body Clothing Replacement — ABSOLUTE**
+- Only modify the clothing area in the visible half-body region.
+- Remove the original clothing entirely with no trace.
+- The new garment must conform naturally to the model’s pose while **keeping ALL garment details unchanged**.
+
+---
+
+## **PHOTOREALISTIC QUALITY (8K / Ultra-Realistic)**
+- Maximum sharpness, no blur.
+- Realistic fabric tension and draping.
+- Lighting consistent with the original background.
+- Clean blending at garment–skin boundaries.
+
+---
+
+## **NEGATIVE INSTRUCTIONS — AVOID AT ALL COSTS**
+- Any changes to the garment’s design
+- Repainting, recoloring, adjusting, or “enhancing” the garment
+- Removing wrinkles, watermarks, flaws, folds, shadows
+- Wrong face, wrong pose, wrong proportions
+- Background changes
+- Pattern or logo distortion
+- CGI, anime, fake-looking textures
+- Body warping, unnatural edges
+
+---
+
+## **FINAL DOUBLE-CHECK (MANDATORY)**
+Before generating the final output, DOUBLE-CHECK that:
+1. **The garment is transferred EXACTLY as in the garment image with ZERO EDITING.**
+2. **Every detail, watermark, wrinkle, color, pattern, and texture is preserved perfectly.**
+3. **The garment is worn naturally and correctly on the model with no distortion or redesign.**
+4. **Identity and background remain untouched and fully preserved.**
 """
 
 def run_tryon(model_file_path: str, garment_file_path: str):
