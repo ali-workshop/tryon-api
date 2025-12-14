@@ -4,11 +4,12 @@ from google.genai import types
 from app.gemini_client import get_gemini_client
 client = get_gemini_client()
 PROMPT = """
-# **Half-Body Garment Replacement Prompt (Strict Garment Preservation)**
+# **Half-Body Garment Replacement Prompt (FORCED CLOTHING REMOVAL + NO LAYERING)**
+
 **TASK:**
-Apply the garment from the second image onto the model in the first image.
-This prompt is ONLY for **half-body clothing replacement** (upper-body or lower-body).
-All original clothing on the model must be fully removed.
+Apply the garment from Image 2 onto the model in Image 1.
+This prompt is ONLY for **half-body clothing replacement** (upper-body OR lower-body).
+The original clothing in the target region MUST be COMPLETELY REMOVED before applying the new garment.
 
 ---
 
@@ -16,67 +17,93 @@ All original clothing on the model must be fully removed.
 
 ### **1. Identity Preservation — ABSOLUTE**
 - Preserve 100% of the model’s face, expression, hair, skin tone, body shape, and pose.
-- No beautification, morphing, or alteration.
+- NO beautification, morphing, smoothing, or alteration.
 
 ### **2. Background Preservation — ABSOLUTE**
 - Keep the original background, lighting, shadows, and environment fully unchanged.
 
 ---
 
-## **3. Garment Integrity — DO NOT CHANGE THE GARMENT UNDER ANY CIRCUMSTANCE**
-**The garment MUST appear EXACTLY the same after try-on as in the original garment image.
-NO editing of the garment is allowed. NO redesign. NO cleanup. NO improvements.**
+## **3. FORCED ORIGINAL CLOTHING REMOVAL — ABSOLUTE (NO LAYERING)**
+Before placing the new garment:
+- **Erase the original garment entirely from the target half-body region.**
+- The original clothing MUST NOT be visible in any form:
+  - NO collars
+  - NO sleeves
+  - NO hems
+  - NO waistbands
+  - NO fabric edges
+  - NO textures showing through
+- The new garment MUST be the **ONLY visible clothing** in the replaced region.
 
-This includes preserving:
-- Original colors (NO color correction or tone matching)
-- Original textures (fabric weave, thread, material, shine)
-- Original shape and silhouette (NO reshaping or smoothing)
-- Original patterns and graphics
-- Logos, prints, icons, badges
+**Layering, overlapping, or placing the new garment on top of the old one is STRICTLY FORBIDDEN.**
+
+---
+
+## **4. Garment Integrity — ZERO MODIFICATION (DO NOT CHANGE THE GARMENT)**
+The garment from Image 2 MUST appear EXACTLY as provided:
+- NO recoloring
+- NO retouching
+- NO cleanup
+- NO smoothing
+- NO resizing or reshaping
+- NO pattern correction
+- NO logo distortion
+- NO fabric reinterpretation
+
+Preserve ALL:
+- Colors, tones, saturation
+- Fabric texture and weave
 - Wrinkles, folds, creases
-- Shadows and lighting that exist on the garment
-- Fabric wear, imperfections, distortions
-- **Watermarks or brand stamps**
-- Tags, labels, embroidery
-- Any visible flaws, marks, or photographer artifacts
+- Prints, graphics, logos
+- Watermarks, stamps, labels
+- Lighting and shadows visible on the garment itself
+- Imperfections, distortions, photo artifacts
 
-**The garment must be transferred AS-IS. Zero modification. Zero reinterpretation. Zero enhancement.**
-
----
-
-## **4. Half-Body Clothing Replacement — ABSOLUTE**
-- Only modify the clothing area in the visible half-body region.
-- Remove the original clothing entirely with no trace.
-- The new garment must conform naturally to the model’s pose while **keeping ALL garment details unchanged**.
+**Transfer the garment AS-IS. No enhancements. No improvements. No corrections.**
 
 ---
 
-## **PHOTOREALISTIC QUALITY (8K / Ultra-Realistic)**
-- Maximum sharpness, no blur.
-- Realistic fabric tension and draping.
-- Lighting consistent with the original background.
-- Clean blending at garment–skin boundaries.
+## **5. Half-Body Replacement Scope — ABSOLUTE**
+- Modify ONLY the target half-body area (upper or lower).
+- Do NOT affect non-target clothing.
+- Do NOT extend the garment beyond its natural boundaries.
+- The garment must conform naturally to the model’s pose WITHOUT altering garment details.
 
 ---
 
-## **NEGATIVE INSTRUCTIONS — AVOID AT ALL COSTS**
-- Any changes to the garment’s design
-- Repainting, recoloring, adjusting, or “enhancing” the garment
-- Removing wrinkles, watermarks, flaws, folds, shadows
-- Wrong face, wrong pose, wrong proportions
-- Background changes
-- Pattern or logo distortion
-- CGI, anime, fake-looking textures
-- Body warping, unnatural edges
+## **PHOTOREALISM (ULTRA-REALISTIC)**
+- Sharp, high-resolution output.
+- Natural fabric tension and drape.
+- Correct occlusion where the garment meets skin or other clothing.
+- Clean, realistic garment–skin edges.
 
 ---
 
-## **FINAL DOUBLE-CHECK (MANDATORY)**
-Before generating the final output, DOUBLE-CHECK that:
-1. **The garment is transferred EXACTLY as in the garment image with ZERO EDITING.**
-2. **Every detail, watermark, wrinkle, color, pattern, and texture is preserved perfectly.**
-3. **The garment is worn naturally and correctly on the model with no distortion or redesign.**
-4. **Identity and background remain untouched and fully preserved.**
+## **NEGATIVE INSTRUCTIONS — STRICTLY FORBIDDEN**
+- Any part of the original clothing visible
+- Garment layering or stacking
+- Ghost outlines of the original garment
+- Transparency revealing original clothes
+- Fabric bleed-through
+- Altering the garment in any way
+- Background or lighting changes
+- CGI, plastic, or painted textures
+- Body warping or incorrect anatomy
+
+---
+
+## **FINAL ENFORCEMENT CHECK (MANDATORY)**
+Before generating the final output, CONFIRM:
+
+1. **The original clothing in the target region has been COMPLETELY ERASED.**
+2. **Only ONE garment exists in the replaced area.**
+3. **No collars, sleeves, hems, or fabric edges from the original garment are visible.**
+4. **The new garment matches Image 2 EXACTLY with ZERO modification.**
+5. **Identity, pose, and background remain untouched.**
+
+
+
 """
 
 def run_tryon(model_file_path: str, garment_file_path: str):
