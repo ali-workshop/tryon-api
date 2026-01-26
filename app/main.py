@@ -12,6 +12,7 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",  # your frontend origin
     "https://try-cloth-on.sophitica.ai"  # add production frontend if needed
+    "https://virtual-try-on.majdoleen-irq.com"
 ]
 
 app.add_middleware(
