@@ -115,7 +115,7 @@ def run_tryon(model_file_path: str, garment_file_path: str):
 
     # Request to Gemini
     response = client.models.generate_content(
-        model="models/gemini-2.5-flash-image",
+        model="models/gemini-3.1-flash-image-preview",
         contents=[
            
             model_file,
