@@ -1,8 +1,9 @@
 import io
 from PIL import Image
-from google.genai import types
 from app.gemini_client import get_gemini_client
+
 client = get_gemini_client()
+
 PROMPT = """
 # **Half-Body Garment Replacement Prompt (FORCED CLOTHING REMOVAL + NO LAYERING)**
 
@@ -102,39 +103,38 @@ Before generating the final output, CONFIRM:
 4. **The new garment matches Image 2 EXACTLY with ZERO modification.**
 5. **Identity, pose, and background remain untouched.**
 
-
-
 """
 
 def run_tryon(model_file_path: str, garment_file_path: str):
-    
+    # Open images as PIL (this is the correct Vertex AI way)
+    person_img = Image.open(model_file_path).convert("RGB")
+    garment_img = Image.open(garment_file_path).convert("RGB")
 
-    # Upload both files to Gemini
-    model_file = client.files.upload(file=model_file_path)
-    garment_file = client.files.upload(file=garment_file_path)
-
-    # Request to Gemini
+    # Request to Gemini on Vertex AI (PROMPT first = best results)
     response = client.models.generate_content(
-        model="models/gemini-2.5-flash-image",
+        model="gemini-2.5-flash-image",          # ← correct model name on Vertex
         contents=[
-           PROMPT,
-            model_file,
-            garment_file,
-             
-        ]
+            PROMPT,          # ← your full strict prompt (MUST be first)
+            person_img,      # Image 1 = model (person)
+            garment_img,     # Image 2 = garment
+        ],
     )
 
-    # Extract image bytes
+    # Extract the generated image
     image_bytes = None
     for candidate in response.candidates:
         for part in candidate.content.parts:
             if part.inline_data and "image" in part.inline_data.mime_type:
-                image_bytes = part.inline_data.data  # already raw bytes
+                image_bytes = part.inline_data.data
                 break
         if image_bytes:
             break
-    
+
     if not image_bytes:
         raise Exception("❌ Gemini returned no image. Full response:\n" + str(response))
-    
+
+    # Cleanup
+    person_img.close()
+    garment_img.close()
+
     return image_bytes
