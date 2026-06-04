@@ -117,10 +117,10 @@ def run_tryon(model_file_path: str, garment_file_path: str):
     response = client.models.generate_content(
         model="models/gemini-2.5-flash-image",
         contents=[
-           
+           PROMPT,
             model_file,
             garment_file,
-             types.Part(text=PROMPT),
+             
         ]
     )
 
